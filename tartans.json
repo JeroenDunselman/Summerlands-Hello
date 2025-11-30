@@ -1,1 +1,27 @@
-
+{
+  "Anderson (1182)": "K6, DR14, K8, T14, R6, T14, K8, G6, K6, K38, K4, G4, K4, R6",
+  "Anderson (1348)": "R8, A16, K2, R4, A51, K8, W8, K6, Y4, K4, Y4, K12, R4, K12, R4, G16, K2, R4, K2, R16, G8",
+  "Anderson (1349)": "R8, A20, K2, R4, K2, A64, B8, W10, K8, Y4, K4, Y4, K16, R4, B16, G18, K2, R4, K2, G16, R8",
+  "Anderson (1350)": "R6, LB12, K2, R4, K2, LB28, K6, W6, K6, Y4, K4, Y4, K4, R4, DB10, R4, G12, K2, R4, K2, G12, R6",
+  "Anderson (1392)": "R6, A8, R2, K2, R2, A36, B8, W6, K4, Y2, K4, Y2, K8, R2, B8, R4, G12, R2, B2, R4, B2, R2, G12, R6",
+  "Anderson (1393)": "R12, A20, R4, K4, R4, A54, K12, W12, K8, Y4, K6, Y4, K18, R4, K18, R8, G20, R4, K4, R8, K4, R4, G20, R12",
+  "Anderson (1395)": "R4, A6, R2, K2, R2, A36, K4, W4, K4, Y2, K2, Y2, K4, R2, B4, R6, G12, R2, G4, R6, G4, R2, G12, R8",
+  "Anderson (1397)": "R12, A20, R4, K4, R4, A54, K12, W12, K8, Y4, K8, Y4, K16, R4, B16, R8, G20, R4, B4, R8, B4, R4, G20, R12",
+  "Anderson (1660)": "R5, T14, K2, R3, K2, T14, R3, B12, R3, K12, Y3, K3, Y3, K6, Y6, K6, W6, K6, A40, K2, R3, K2, A12, T6",
+  "Anderson (Dress)": "R4, G8, R4, G8, R2, K4, Y4, K4, Y2, W4, Y2, W24, R4, W10, R6",
+  "Royal Stewart": "R28 W4 R8 Y4 R28 K32",
+  "Black Watch": "DB4 G28 DB4 G6 DB28 K6",
+  "Burberry": "K6 W6 R32 W32 K6",
+  "Gordon Modern": "DB48 G48 DB8 Y8",
+  "MacDonald of the Isles": "R18 K12 B6",
+  "MacLeod of Harris": "K24 W4 A24 Y4 A6 G24 W4 K4",
+  "Dress Gordon": "K4 B24 K24 Y4 K60",
+  "Cameron of Erracht": "R6 G32 R32 Y6 R6 K32",
+  "Fraser (Hunting)": "G32 R6 W4 R6 G6 R32",
+  "MacKenzie": "G32 K6 G6 K32 B32",
+  "MacGregor": "R32 K6 R6 K32 G32",
+  "Robertson": "R32 W4 R6 W4 R32 K32",
+  "Wallace": "K2 R16 K16 Y2",
+  "Wilson (179)": "B64 G20 R4 G3 R4 G3",
+  "Wilson (626)": "B45 W4 B6 G6 B6 G6 B6 G37 R6 G6 R6 G6 R6 G6 R6 G39 R27 G6 B6 R12 W4 R30"
+}
