@@ -1,4 +1,4 @@
-# Summerlands – De Ultieme Tartan Mirror (2025 – Final & Perfect)
+# app.py – Summerlands met << Vorige / Volgende >> navigatie
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,6 +16,14 @@ def load_data():
     return colors, tartans
 
 COLORS, TARTANS = load_data()
+
+# Sorteer voor consistente volgorde
+TARTAN_LIST = sorted(TARTANS.keys())
+TOTAL = len(TARTAN_LIST)
+
+# === Sessie-state voor huidige positie ===
+if "index" not in st.session_state:
+    st.session_state.index = 0
 
 def parse_threadcount(tc: str):
     parts = [p.strip() for p in tc.replace(",", " ").split() if p.strip()]
@@ -54,31 +62,50 @@ def create_tartan(pattern, size=900, scale=1):
     final = pil_img.resize((size, size), Image.NEAREST)
     return np.array(final)
 
+# === UI ===
 st.set_page_config(page_title="Summerlands – 531 Tartans", layout="centered")
-st.title("Summerlands – 531 Officiële Schotse Tartans")
+st.title("Summerlands – Scroll door 531 tartans")
 
-selected = st.selectbox(
-    "Zoek een tartan (typ naam)",
-    options=[""] + sorted(TARTANS.keys()),
-    format_func=lambda x: "– Kies een tartan –" if not x else x
-)
+# Navigatiebalk
+col_prev, col_info, col_next = st.columns([1, 3, 1])
 
-tc = TARTANS.get(selected, "") if selected else st.text_input("Of handmatig", "G1 K6 B3 R1")
+with col_prev:
+    if st.button("<< Vorige", use_container_width=True):
+        st.session_state.index = (st.session_state.index - 1) % TOTAL
+        st.rerun()
 
-col1, col2 = st.columns([3, 1])
-with col2:
+with col_next:
+    if st.button("Volgende >>", use_container_width=True):
+        st.session_state.index = (st.session_state.index + 1) % TOTAL
+        st.rerun()
+
+# Huidige tartan
+current_name = TARTAN_LIST[st.session_state.index]
+current_tc = TARTANS[current_name]
+
+with col_info:
+    st.subheader(f"{st.session_state.index + 1} / {TOTAL}")
+    st.write(f"**{current_name}**")
+    st.code(current_tc)
+
+col_scale = st.columns([3, 1])[1]
+with col_scale:
     scale = st.slider("Schaal", 1, 100, 1)
 
-if tc.strip():
-    pattern = parse_threadcount(tc)
-    if pattern:
-        img = create_tartan(pattern, size=900, scale=scale)
-        st.image(img, use_column_width=True)
-        buf = BytesIO()
-        plt.imsave(buf, img, format="png")
-        buf.seek(0)
-        st.download_button("Download", buf,
-                           file_name=f"Summerlands_{selected.replace(' ', '_') if selected else 'custom'}.png",
-                           mime="image/png")
+# Render tartan
+pattern = parse_threadcount(current_tc)
+if pattern:
+    img = create_tartan(pattern, size=900, scale=scale)
+    st.image(img, use_column_width=True)
 
-st.success("Summerlands is terug – en beter dan ooit.")
+    buf = BytesIO()
+    plt.imsave(buf, img, format="png")
+    buf.seek(0)
+    st.download_button(
+        "Download",
+        buf,
+        file_name=f"Summerlands_{current_name.replace(' ', '_')}.png",
+        mime="image/png"
+    )
+
+st.caption("Gebruik ← → of knoppen om te bladeren – 531 tartans, eindeloos plezier.")
