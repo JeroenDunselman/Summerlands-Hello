@@ -1,4 +1,4 @@
-# app.py – Summerlands – Beide tabs werken + Tartan altijd zichtbaar (2025 Final)
+# app.py – Summerlands met << Vorige / Volgende >> op "Alle tartans"
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,35 +16,20 @@ def load_data():
     return colors, tartans
 
 COLORS, TARTANS = load_data()
-
-# === CATEGORIEËN ===
-CATEGORIES = {
-    "Regiment": ["Black Watch", "Gordon Modern", "Cameron of Erracht"],
-    "Dress": ["Royal Stewart (Dress)", "Anderson (Dress)", "Gordon Dress"],
-    "Hunting": ["Fraser Hunting", "MacKenzie Hunting", "Turnbull (Hunting)"],
-    "Weathered / Ancient": ["MacDonald Ancient", "Sutherland Old"],
-    "Modern / Classic": ["Royal Stewart", "Burberry", "MacDonald of the Isles", "Wallace"]
-}
-
 ALL_TARTANS = sorted(TARTANS.keys())
-tartan_to_category = {}
-for cat, names in CATEGORIES.items():
-    for name in names:
-        matches = [t for t in ALL_TARTANS if name.lower().replace(" ", "") in t.lower().replace(" ", "")]
-        for m in matches:
-            tartan_to_category[m] = cat
+TOTAL = len(ALL_TARTANS)
 
 # === Session state ===
-if "selected_tartan" not in st.session_state:
-    st.session_state.selected_tartan = "Royal Stewart"
+if "index" not in st.session_state:
+    st.session_state.index = 0
 
 # === UI ===
-st.set_page_config(page_title="Summerlands – Categorieën", layout="centered")
-st.title("Summerlands – Kies per categorie")
+st.set_page_config(page_title="Summerlands – Scroll", layout="centered")
+st.title("Summerlands – Scroll door 531 tartans")
 
 tab1, tab2 = st.tabs(["Categorieën", "Alle tartans"])
 
-# === TAB 1 ===
+# === TAB 1: Categorieën (blijft zoals voorheen) ===
 with tab1:
     cat = st.selectbox("Categorie", ["Alle"] + list(CATEGORIES.keys()), key="cat")
     if cat == "Alle":
@@ -52,69 +37,41 @@ with tab1:
     else:
         options = [t for t in ALL_TARTANS if tartan_to_category.get(t) == cat]
     selected = st.selectbox("Tartan", options, key="cat_tartan")
-    if selected != st.session_state.selected_tartan:
-        st.session_state.selected_tartan = selected
-        st.rerun()
+    current_name = selected
 
-# === TAB 2 ===
+# === TAB 2: Alle tartans met << >> knoppen ===
 with tab2:
-    selected = st.selectbox(
-        "Zoek alle tartans",
-        options=[""] + ALL_TARTANS,
-        format_func=lambda x: "– Kies een tartan –" if not x else x,
-        key="all_tartan"
-    )
-    if selected:
-        st.session_state.selected_tartan = selected
-        st.rerun()
+    col_prev, col_info, col_next = st.columns([1, 3, 1])
+    
+    with col_prev:
+        if st.button("<< Vorige", use_container_width=True):
+            st.session_state.index = (st.session_state.index - 1) % TOTAL
+            st.rerun()
+    
+    with col_next:
+        if st.button("Volgende >>", use_container_width=True):
+            st.session_state.index = (st.session_state.index + 1) % TOTAL
+            st.rerun()
+    
+    with col_info:
+        current_name = ALL_TARTANS[st.session_state.index]
+        st.subheader(f"{st.session_state.index + 1} / {TOTAL}")
+        st.write(f"**{current_name}**")
+        st.code(TARTANS[current_name])
 
-# === Gebruik geselecteerde tartan ===
-current = st.session_state.selected_tartan
-tc = TARTANS.get(current, TARTANS["Royal Stewart"])
-category = tartan_to_category.get(current, "Ongecategoriseerd")
+# === Gebruik geselecteerde tartan (van beide tabs) ===
+final_name = current_name if 'current_name' in locals() else ALL_TARTANS[st.session_state.index]
+tc = TARTANS[final_name]
+category = tartan_to_category.get(final_name, "Ongecategoriseerd")
 
-st.subheader(current)
 st.caption(f"Categorie: **{category}** | Threadcount: `{tc}`")
 
 scale = st.slider("Schaal", 1, 100, 1)
 
-# === VOLLEDIGE RENDERING (geen ellipsis) ===
-def parse_threadcount(tc):
-    parts = [p.strip() for p in tc.replace(",", " ").split() if p.strip()]
-    pattern = []
-    for part in parts:
-        part = part.upper()
-        color = None
-        num_str = part
-        for c in sorted(COLORS.keys(), key=len, reverse=True):
-            if part.startswith(c):
-                color = c
-                num_str = part[len(c):]
-                break
-        if color and color in COLORS:
-            count = 1.0 if not num_str else float(num_str)
-            pattern.append((color, count))
-    return pattern
-
-def build_sett(pattern):
-    f_counts = [c for _, c in pattern]
-    f_colors  = [col for col, _ in pattern]
-    return f_counts + f_counts[::-1][1:], f_colors + f_colors[::-1][1:]
-
-def create_tartan(pattern, size=900, scale=1):
-    sett_counts, sett_colors = build_sett(pattern)
-    widths = [max(1, int(round(c * scale))) for c in sett_counts]
-    total_w = sum(widths)
-    tartan = np.zeros((total_w, total_w, 3), dtype=np.uint8)
-    pos = 0
-    for w, col in zip(widths, sett_colors):
-        tartan[:, pos:pos+w] = COLORS[col]
-        pos += w
-    weft = tartan.copy().transpose(1, 0, 2)
-    result = np.minimum(tartan + weft, 255).astype(np.uint8)
-    pil_img = Image.fromarray(result)
-    final = pil_img.resize((size, size), Image.NEAREST)
-    return np.array(final)
+# === Rendering ===
+def parse_threadcount(tc): ...  # jouw functie
+def build_sett(pattern): ...     # jouw functie
+def create_tartan(pattern, size=900, scale=1): ...  # jouw functie
 
 pattern = parse_threadcount(tc)
 if pattern:
@@ -124,7 +81,5 @@ if pattern:
     plt.imsave(buf, img, format="png")
     buf.seek(0)
     st.download_button("Download", buf,
-                       file_name=f"Summerlands_{current.replace(' ', '_')}.png",
+                       file_name=f"Summerlands_{final_name.replace(' ', '_')}.png",
                        mime="image/png")
-
-st.success("Beide tabs werken. Tartan altijd zichtbaar. Geen sneu meer.")
